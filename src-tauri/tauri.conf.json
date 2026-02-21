@@ -13,9 +13,9 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "realmlister",
-        "width": 800,
-        "height": 600
+        "title": "RealmLister - Code by Vision",
+        "width": 1000,
+        "height": 700
       }
     ],
     "security": {

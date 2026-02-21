@@ -5,7 +5,7 @@ use realmlist::write_realmlist;
 use store::{
     load_servers, load_settings, save_servers, save_settings, AppSettings, Server, ServerList,
 };
-use std::net::TcpStream;
+use std::net::{TcpStream, ToSocketAddrs};
 use std::path::Path;
 use std::time::Duration;
 use tauri::Manager;
@@ -155,22 +155,26 @@ fn play_wow(app: tauri::AppHandle, args: PlayWowArgs) -> Result<(), String> {
 
 #[tauri::command]
 fn check_realm_status(host: String, port: Option<u16>) -> Result<RealmStatus, String> {
+    let host = host.trim();
     let port = port.unwrap_or(3724);
-    let addr = format!("{}:{}", host.trim(), port);
     let start = std::time::Instant::now();
-    match TcpStream::connect_timeout(
-        &addr.parse().map_err(|_| format!("Invalid address: {}", addr))?,
-        Duration::from_secs(3),
-    ) {
-        Ok(_) => Ok(RealmStatus {
-            online: true,
-            latency_ms: start.elapsed().as_millis() as u64,
-        }),
-        Err(_) => Ok(RealmStatus {
-            online: false,
-            latency_ms: 0,
-        }),
+    // Resolve hostname (e.g. "localhost") to socket addrs; "ip:port" also works via ToSocketAddrs
+    let addrs: Vec<_> = (host, port)
+        .to_socket_addrs()
+        .map_err(|e| format!("Could not resolve {}:{}: {}", host, port, e))?
+        .collect();
+    for addr in addrs {
+        if TcpStream::connect_timeout(&addr, Duration::from_secs(3)).is_ok() {
+            return Ok(RealmStatus {
+                online: true,
+                latency_ms: start.elapsed().as_millis() as u64,
+            });
+        }
     }
+    Ok(RealmStatus {
+        online: false,
+        latency_ms: 0,
+    })
 }
 
 #[derive(serde::Serialize)]
