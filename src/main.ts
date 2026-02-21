@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 // Background image: place src/assets/background.jpg for it to show
 import("./assets/background.jpg")
@@ -364,6 +365,10 @@ function bindMainView() {
   });
 
   document.getElementById("btn-add-server")?.addEventListener("click", showAddForm);
+
+  document.getElementById("btn-github")?.addEventListener("click", () => {
+    openUrl("https://github.com/CodebyVision/RealmLister");
+  });
 
   document.getElementById("btn-remove-server")?.addEventListener("click", removeCurrentServer);
 

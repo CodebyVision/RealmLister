@@ -104,8 +104,9 @@ body::after {
   gap: 1rem;
 }
 
-/* Servers, Settings, Add server – same size */
+/* Servers, Settings, Github, Add server – same size */
 .app-header .nav-link,
+.app-header .nav-link-btn,
 .app-header .btn {
   padding: 0.5em 1em;
   font-size: 0.95rem;
