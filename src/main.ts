@@ -43,7 +43,6 @@ const MAIN_VIEW_ID = "main-view";
 const SETTINGS_VIEW_ID = "settings-view";
 const SERVER_DETAIL_ID = "server-detail";
 const SERVER_DETAIL_EMPTY_ID = "server-detail-empty";
-const SERVER_FORM_SECTION_ID = "server-form-section";
 
 function showToast(message: string, isError = false, view: "main" | "settings" = "main") {
   const id = view === "settings" ? "toast-settings" : "toast";
@@ -97,15 +96,42 @@ function showDetail(server: Server | null) {
   if (!server) {
     detailEmpty.hidden = false;
     detail.hidden = true;
+    editingId = null;
     return;
   }
   detailEmpty.hidden = true;
   detail.hidden = false;
-  (document.getElementById("detail-name") as HTMLElement).textContent = server.name;
-  (document.getElementById("detail-host") as HTMLElement).textContent = server.realmlist_host;
+  detail.classList.remove("add-mode");
+  editingId = server.id;
+  const nameEl = document.getElementById("detail-name");
+  if (nameEl) nameEl.textContent = server.name;
   const statusEl = document.getElementById("detail-status-value");
   if (statusEl) statusEl.textContent = "—";
   statusEl?.setAttribute("data-status", "");
+  populateForm(server);
+}
+
+function showAddForm() {
+  const detailEmpty = document.getElementById(SERVER_DETAIL_EMPTY_ID);
+  const detail = document.getElementById(SERVER_DETAIL_ID);
+  if (!detailEmpty || !detail) return;
+  selectedId = null;
+  renderServerList();
+  detailEmpty.hidden = true;
+  detail.hidden = false;
+  detail.classList.add("add-mode");
+  editingId = null;
+  const nameEl = document.getElementById("detail-name");
+  if (nameEl) nameEl.textContent = "Add server";
+  populateForm(null);
+}
+
+function populateForm(server: Server | null) {
+  (document.getElementById("form-name") as HTMLInputElement).value = server?.name ?? "";
+  (document.getElementById("form-host") as HTMLInputElement).value = server?.realmlist_host ?? "";
+  (document.getElementById("form-port") as HTMLInputElement).value = server?.port ? String(server.port) : "3724";
+  (document.getElementById("form-wow-exe") as HTMLInputElement).value = server?.wow_exe?.trim() || "Wow.exe";
+  (document.getElementById("form-wow-path") as HTMLInputElement).value = server?.wow_path ?? "";
 }
 
 function setDetailStatus(status: "checking" | "online" | "offline", latencyMs?: number) {
@@ -133,24 +159,12 @@ async function checkSelectedServerStatus() {
   }
 }
 
-function showServerForm(server: Server | null) {
-  const section = document.getElementById(SERVER_FORM_SECTION_ID);
-  const title = document.getElementById("server-form-title");
-  const form = document.getElementById("server-form") as HTMLFormElement;
-  if (!section || !title || !form) return;
-  editingId = server?.id ?? null;
-  section.hidden = false;
-  title.textContent = server ? "Edit server" : "Add server";
-  (document.getElementById("form-name") as HTMLInputElement).value = server?.name ?? "";
-  (document.getElementById("form-host") as HTMLInputElement).value = server?.realmlist_host ?? "";
-  (document.getElementById("form-port") as HTMLInputElement).value = server?.port ? String(server.port) : "3724";
-  (document.getElementById("form-wow-exe") as HTMLInputElement).value = server?.wow_exe?.trim() || "Wow.exe";
-  (document.getElementById("form-wow-path") as HTMLInputElement).value = server?.wow_path ?? "";
-}
-
 function hideServerForm() {
-  const section = document.getElementById(SERVER_FORM_SECTION_ID);
-  if (section) section.hidden = true;
+  const detail = document.getElementById(SERVER_DETAIL_ID);
+  const detailEmpty = document.getElementById(SERVER_DETAIL_EMPTY_ID);
+  if (detail) detail.hidden = true;
+  if (detailEmpty) detailEmpty.hidden = false;
+  detail?.classList.remove("add-mode");
   editingId = null;
 }
 
@@ -208,20 +222,49 @@ async function saveServerFromForm() {
     }
     serverList = await loadServers();
     renderServerList();
-    hideServerForm();
-    if (selectedId && serverList.servers.some((s) => s.id === selectedId)) {
-      updatePlayButton();
-      checkSelectedServerStatus();
+    if (editingId) {
+      const stillSelected = serverList.servers.find((s) => s.id === editingId);
+      if (stillSelected) {
+        populateForm(stillSelected);
+        updatePlayButton();
+        checkSelectedServerStatus();
+      }
+    } else {
+      if (serverList.servers.length > 0) {
+        selectedId = serverList.servers[serverList.servers.length - 1].id;
+        renderServerList();
+        showDetail(serverList.servers[serverList.servers.length - 1]);
+        updatePlayButton();
+        checkSelectedServerStatus();
+      } else {
+        hideServerForm();
+      }
     }
   } catch (e) {
     showToast(String(e), true);
   }
 }
 
-async function removeCurrentServer() {
+function showRemoveModal() {
   const server = getSelectedServer();
   if (!server) return;
-  if (!confirm(`Remove server "${server.name}"?`)) return;
+  const messageEl = document.getElementById("remove-modal-message");
+  if (messageEl) messageEl.textContent = `Remove server "${server.name}"? This cannot be undone.`;
+  const modal = document.getElementById("remove-modal");
+  if (modal) modal.hidden = false;
+}
+
+function hideRemoveModal() {
+  const modal = document.getElementById("remove-modal");
+  if (modal) modal.hidden = true;
+}
+
+async function confirmRemoveServer() {
+  const server = getSelectedServer();
+  if (!server) {
+    hideRemoveModal();
+    return;
+  }
   try {
     await invoke("remove_server", { id: server.id });
     serverList = await loadServers();
@@ -230,10 +273,15 @@ async function removeCurrentServer() {
     showDetail(selectedId ? serverList.servers.find((s) => s.id === selectedId)! : null);
     updatePlayButton();
     if (selectedId) checkSelectedServerStatus();
+    hideRemoveModal();
     showToast("Server removed.");
   } catch (e) {
     showToast(String(e), true);
   }
+}
+
+function removeCurrentServer() {
+  showRemoveModal();
 }
 
 async function playWow() {
@@ -315,16 +363,20 @@ function bindMainView() {
     }
   });
 
-  document.getElementById("btn-add-server")?.addEventListener("click", () => {
-    showServerForm(null);
-  });
-
-  document.getElementById("btn-edit-server")?.addEventListener("click", () => {
-    const server = getSelectedServer();
-    if (server) showServerForm(server);
-  });
+  document.getElementById("btn-add-server")?.addEventListener("click", showAddForm);
 
   document.getElementById("btn-remove-server")?.addEventListener("click", removeCurrentServer);
+
+  document.getElementById("remove-modal-cancel")?.addEventListener("click", hideRemoveModal);
+  document.getElementById("remove-modal-confirm")?.addEventListener("click", confirmRemoveServer);
+  document.getElementById("remove-modal")?.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).id === "remove-modal") hideRemoveModal();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !(document.getElementById("remove-modal")?.hidden ?? true)) {
+      hideRemoveModal();
+    }
+  });
 
   document.getElementById("btn-refresh-status")?.addEventListener("click", checkSelectedServerStatus);
 
@@ -335,7 +387,14 @@ function bindMainView() {
     saveServerFromForm();
   });
 
-  document.getElementById("btn-cancel-form")?.addEventListener("click", hideServerForm);
+  document.getElementById("btn-cancel-form")?.addEventListener("click", () => {
+    if (editingId) {
+      const server = getSelectedServer();
+      if (server) populateForm(server);
+    } else {
+      hideServerForm();
+    }
+  });
 
   document.getElementById("btn-browse-wow")?.addEventListener("click", () => browseWowPath("form-wow-path"));
 }

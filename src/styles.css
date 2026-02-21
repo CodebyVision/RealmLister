@@ -176,6 +176,11 @@ body::after {
   padding: 1rem 0;
 }
 
+.detail-name {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.25rem;
+}
+
 .server-detail p {
   margin: 0.5rem 0;
 }
@@ -209,6 +214,17 @@ body::after {
   gap: 0.5rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+}
+
+.server-detail.add-mode .detail-status,
+.server-detail.add-mode .detail-actions {
+  display: none;
+}
+
+.server-form-inline {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
 }
 
 .btn-play {
@@ -381,6 +397,47 @@ body::after {
   border: 1px solid #ef9a9a;
 }
 
+/* Custom modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.modal-message {
+  margin: 0 0 1.25rem 0;
+  color: #555;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #e0e0e0;
@@ -462,6 +519,10 @@ body::after {
     background: #252525;
   }
 
+  .server-form-inline {
+    border-top-color: #333;
+  }
+
   .server-form input,
   .server-form select,
   .settings-form input,
@@ -489,5 +550,14 @@ body::after {
     background: #3d1b1b;
     color: #f88;
     border-color: #5a2a2a;
+  }
+
+  .modal {
+    background: #252525;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-message {
+    color: #aaa;
   }
 }

@@ -28,8 +28,7 @@
         <section class="server-detail-section">
           <div id="server-detail-empty" class="detail-empty">Select a server or add one.</div>
           <div id="server-detail" class="server-detail" hidden>
-            <h3 id="detail-name"></h3>
-            <p class="detail-host">Realmlist: <span id="detail-host"></span></p>
+            <h3 id="detail-name" class="detail-name"></h3>
             <div class="detail-status">
               <span id="detail-status-label">Status:</span>
               <span id="detail-status-value"></span>
@@ -37,27 +36,35 @@
             </div>
             <div class="detail-actions">
               <button type="button" id="btn-play" class="btn btn-primary btn-play">Play</button>
-              <button type="button" id="btn-edit-server" class="btn">Edit</button>
               <button type="button" id="btn-remove-server" class="btn btn-danger">Remove</button>
             </div>
+            <form id="server-form" class="server-form server-form-inline">
+              <label>Name <input type="text" id="form-name" required /></label>
+              <label>Realmlist host <input type="text" id="form-host" placeholder="logon.example.com" required /></label>
+              <label>Port (status check) <input type="number" id="form-port" placeholder="3724" min="1" max="65535" /></label>
+              <label>Start program <input type="text" id="form-wow-exe" placeholder="Wow.exe" title="Executable to launch (e.g. Wow.exe, WowClassic.exe)" /></label>
+              <label>WoW path (optional) <span class="input-with-btn"><input type="text" id="form-wow-path" placeholder="Use default from Settings" /><button type="button" id="btn-browse-wow" class="btn btn-small">Browse</button></span></label>
+              <div class="form-actions">
+                <button type="submit" id="btn-save-server" class="btn btn-primary">Save</button>
+                <button type="button" id="btn-cancel-form" class="btn">Restore</button>
+              </div>
+            </form>
           </div>
-        </section>
-        <section class="server-form-section" id="server-form-section" hidden>
-          <h3 id="server-form-title">Add server</h3>
-          <form id="server-form" class="server-form">
-            <label>Name <input type="text" id="form-name" required /></label>
-            <label>Realmlist host <input type="text" id="form-host" placeholder="logon.example.com" required /></label>
-            <label>Port (status check) <input type="number" id="form-port" placeholder="3724" min="1" max="65535" /></label>
-            <label>Start program <input type="text" id="form-wow-exe" placeholder="Wow.exe" title="Executable to launch (e.g. Wow.exe, WowClassic.exe)" /></label>
-            <label>WoW path (optional) <span class="input-with-btn"><input type="text" id="form-wow-path" placeholder="Use default from Settings" /><button type="button" id="btn-browse-wow" class="btn btn-small">Browse</button></span></label>
-            <div class="form-actions">
-              <button type="submit" id="btn-save-server" class="btn btn-primary">Save</button>
-              <button type="button" id="btn-cancel-form" class="btn">Cancel</button>
-            </div>
-          </form>
         </section>
         <div id="toast" class="toast" role="status" aria-live="polite"></div>
       </main>
+
+      <!-- Remove server confirmation modal -->
+      <div id="remove-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="remove-modal-title" hidden>
+        <div class="modal">
+          <h2 id="remove-modal-title" class="modal-title">Remove server?</h2>
+          <p id="remove-modal-message" class="modal-message"></p>
+          <div class="modal-actions">
+            <button type="button" id="remove-modal-cancel" class="btn">Cancel</button>
+            <button type="button" id="remove-modal-confirm" class="btn btn-danger">Remove</button>
+          </div>
+        </div>
+      </div>
 
       <main id="settings-view" class="view" hidden>
         <section class="settings-section">
