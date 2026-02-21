@@ -11,23 +11,25 @@
     <div id="app">
       <header class="app-header">
         <h1>RealmLister</h1>
-        <nav>
-          <a href="#/" class="nav-link" data-route="main">Servers</a>
-          <a href="#/settings" class="nav-link" data-route="settings">Settings</a>
-        </nav>
+        <div class="app-header-right">
+          <nav>
+            <a href="#/" class="nav-link" data-route="main">Servers</a>
+            <a href="#/settings" class="nav-link" data-route="settings">Settings</a>
+          </nav>
+          <button type="button" id="btn-add-server" class="btn btn-primary">Add server</button>
+        </div>
       </header>
 
       <main id="main-view" class="view">
         <section class="server-list-section">
-          <div class="section-header">
-            <h2>Servers</h2>
-            <button type="button" id="btn-add-server" class="btn btn-primary">Add server</button>
-          </div>
+          <h2 class="server-list-title">Servers</h2>
           <ul id="server-list" class="server-list" role="listbox"></ul>
         </section>
         <section class="server-detail-section">
-          <div id="server-detail-empty" class="detail-empty">Select a server or add one.</div>
-          <div id="server-detail" class="server-detail" hidden>
+          <h2 class="server-detail-title">Server Info</h2>
+          <div class="server-detail-container">
+            <div id="server-detail-empty" class="detail-empty">Select a server or add one.</div>
+            <div id="server-detail" class="server-detail" hidden>
             <h3 id="detail-name" class="detail-name"></h3>
             <div class="detail-status">
               <span id="detail-status-label">Status:</span>
@@ -49,6 +51,7 @@
                 <button type="button" id="btn-cancel-form" class="btn">Restore</button>
               </div>
             </form>
+            </div>
           </div>
         </section>
         <div id="toast" class="toast" role="status" aria-live="polite"></div>
