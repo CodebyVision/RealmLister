@@ -82,6 +82,12 @@ body::after {
   border-bottom: 1px solid #ddd;
 }
 
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .app-header h1 {
   margin: 0;
   font-size: 1.5rem;
@@ -98,19 +104,41 @@ body::after {
   gap: 1rem;
 }
 
-.nav-link {
+/* Servers, Settings, Add server – same size */
+.app-header .nav-link,
+.app-header .btn {
+  padding: 0.5em 1em;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #646cff;
+  line-height: 1.4;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link {
+  font-family: inherit;
+  color: #fff;
+  background: #396cd8;
+  border: 1px solid #396cd8;
+  border-radius: 8px;
   text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .nav-link:hover {
-  color: #535bf2;
+  background: #2a5bc7;
+  border-color: #2a5bc7;
+  color: #fff;
 }
 
 .nav-link.active {
-  font-weight: 600;
-  color: #396cd8;
+  background: #2a5bc7;
+  border-color: #2a5bc7;
+  color: #fff;
 }
 
 .view {
@@ -311,6 +339,17 @@ body::after {
   border-color: #2a5bc7;
 }
 
+.btn-success {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #2e7d32;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #1b5e20;
+  border-color: #1b5e20;
+}
+
 .btn-danger {
   color: #c00;
   border-color: #e88;
@@ -494,11 +533,16 @@ body::after {
   }
 
   .nav-link {
-    color: #7c9cff;
+    color: #fff;
+    background: #396cd8;
+    border-color: #396cd8;
   }
 
-  .nav-link:hover {
-    color: #9cb4ff;
+  .nav-link:hover,
+  .nav-link.active {
+    background: #4a7ce8;
+    border-color: #4a7ce8;
+    color: #fff;
   }
 
   .server-list-wrapper,
@@ -547,6 +591,16 @@ body::after {
 
   .btn-primary:hover:not(:disabled) {
     background: #4a7ce8;
+  }
+
+  .btn-success {
+    background: #2e7d32;
+    border-color: #2e7d32;
+  }
+
+  .btn-success:hover:not(:disabled) {
+    background: #388e3c;
+    border-color: #388e3c;
   }
 
   .btn-danger {
