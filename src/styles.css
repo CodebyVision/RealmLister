@@ -129,7 +129,7 @@ body::after {
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
-  max-height: 360px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
