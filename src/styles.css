@@ -4,7 +4,6 @@
   line-height: 24px;
   font-weight: 400;
   color: #0f0f0f;
-  background-color: #f6f6f6;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -19,6 +18,29 @@
 body {
   margin: 0;
   min-height: 100vh;
+  position: relative;
+}
+
+/* Dark layer behind the image */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: #1a1a1a;
+  z-index: -2;
+}
+
+/* Image layer at 50% opacity (above the dark layer) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: -1;
 }
 
 #app {

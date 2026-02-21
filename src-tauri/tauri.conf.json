@@ -15,7 +15,10 @@
       {
         "title": "RealmLister - Code by Vision",
         "width": 1000,
-        "height": 700
+        "height": 700,
+        "resizable": false,
+        "maximizable": false,
+        "center": true
       }
     ],
     "security": {

@@ -1,6 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 
+// Background image: place src/assets/background.jpg for it to show
+import("./assets/background.jpg")
+  .then((m) => {
+    document.body.style.setProperty("--bg-image", `url(${m.default})`);
+  })
+  .catch(() => {});
+
 // Types matching Rust
 interface Server {
   id: string;
