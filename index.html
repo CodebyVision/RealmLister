@@ -4,40 +4,74 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
+    <title>RealmLister – WoW Realmlist Modifier</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
-
   <body>
-    <main class="container">
-      <h1>Welcome to Tauri</h1>
+    <div id="app">
+      <header class="app-header">
+        <h1>RealmLister</h1>
+        <nav>
+          <a href="#/" class="nav-link" data-route="main">Servers</a>
+          <a href="#/settings" class="nav-link" data-route="settings">Settings</a>
+        </nav>
+      </header>
 
-      <div class="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/src/assets/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="/src/assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+      <main id="main-view" class="view">
+        <section class="server-list-section">
+          <div class="section-header">
+            <h2>Servers</h2>
+            <button type="button" id="btn-add-server" class="btn btn-primary">Add server</button>
+          </div>
+          <ul id="server-list" class="server-list" role="listbox"></ul>
+        </section>
+        <section class="server-detail-section">
+          <div id="server-detail-empty" class="detail-empty">Select a server or add one.</div>
+          <div id="server-detail" class="server-detail" hidden>
+            <h3 id="detail-name"></h3>
+            <p class="detail-host">Realmlist: <span id="detail-host"></span></p>
+            <div class="detail-status">
+              <span id="detail-status-label">Status:</span>
+              <span id="detail-status-value"></span>
+              <button type="button" id="btn-refresh-status" class="btn btn-small">Refresh</button>
+            </div>
+            <div class="detail-actions">
+              <button type="button" id="btn-play" class="btn btn-primary btn-play">Play</button>
+              <button type="button" id="btn-edit-server" class="btn">Edit</button>
+              <button type="button" id="btn-remove-server" class="btn btn-danger">Remove</button>
+            </div>
+          </div>
+        </section>
+        <section class="server-form-section" id="server-form-section" hidden>
+          <h3 id="server-form-title">Add server</h3>
+          <form id="server-form" class="server-form">
+            <label>Name <input type="text" id="form-name" required /></label>
+            <label>Realmlist host <input type="text" id="form-host" placeholder="logon.example.com" required /></label>
+            <label>Port (status check) <input type="number" id="form-port" placeholder="3724" min="1" max="65535" /></label>
+            <label>Start program <input type="text" id="form-wow-exe" placeholder="Wow.exe" title="Executable to launch (e.g. Wow.exe, WowClassic.exe)" /></label>
+            <label>WoW path (optional) <span class="input-with-btn"><input type="text" id="form-wow-path" placeholder="Use default from Settings" /><button type="button" id="btn-browse-wow" class="btn btn-small">Browse</button></span></label>
+            <div class="form-actions">
+              <button type="submit" id="btn-save-server" class="btn btn-primary">Save</button>
+              <button type="button" id="btn-cancel-form" class="btn">Cancel</button>
+            </div>
+          </form>
+        </section>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </main>
 
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-    </main>
+      <main id="settings-view" class="view" hidden>
+        <section class="settings-section">
+          <h2>Settings</h2>
+          <form id="settings-form" class="settings-form">
+            <label>Default WoW folder <span class="input-with-btn"><input type="text" id="settings-wow-path" placeholder="C:\Program Files\World of Warcraft" /><button type="button" id="btn-browse-settings" class="btn">Browse</button></span></label>
+            <label>Realmlist locale <select id="settings-locale"><option value="enUS">enUS</option><option value="enGB">enGB</option></select></label>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Save settings</button>
+            </div>
+          </form>
+        </section>
+        <div id="toast-settings" class="toast" role="status" aria-live="polite"></div>
+      </main>
+    </div>
   </body>
 </html>
