@@ -1,4 +1,6 @@
 # RealmLister – World of Warcraft realmlist manager
+[![Github All Releases](https://img.shields.io/github/downloads/CodebyVision/RealmLister/total.svg)]()
+___
 
 **RealmLister** is a free, open-source desktop app for managing your **World of Warcraft (WoW) realmlist**. Add, edit, and switch between WoW servers (including private servers), check realm status and latency, and set a default game path—all in one simple interface.
 
