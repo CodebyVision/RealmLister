@@ -15,6 +15,31 @@
   box-sizing: border-box;
 }
 
+/* Scrollbar – light theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #aaa #eee;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #eee;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -574,5 +599,22 @@ body::after {
 
   .modal-message {
     color: #aaa;
+  }
+
+  /* Scrollbar – dark theme */
+  * {
+    scrollbar-color: #555 #333;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #333;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #666;
   }
 }
