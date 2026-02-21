@@ -161,13 +161,18 @@ body::after {
   margin-bottom: 0.75rem;
 }
 
+.server-list-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  max-height: 540px;
+}
+
 .server-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
   max-height: 540px;
   overflow-y: auto;
 }
@@ -496,7 +501,7 @@ body::after {
     color: #9cb4ff;
   }
 
-  .server-list,
+  .server-list-wrapper,
   .server-detail-container {
     border-color: #333;
     background: #252525;
