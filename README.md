@@ -6,7 +6,7 @@ ___
 
 **RealmLister** is a free, open-source desktop app for managing your **World of Warcraft (WoW) realmlist**. Add, edit, and switch between WoW servers (including private servers), check realm status and latency, and set a default game path—all in one simple interface.
 
-![RealmLister app screenshot](https://github.com/user-attachments/assets/c2b07433-7a0d-417a-86e3-779903ebdf04)
+<img width="1609" height="1006" alt="image" src="https://github.com/user-attachments/assets/edf8f3b5-4859-4153-9769-4bd9ba157a45" />
 
 ## Features
 
