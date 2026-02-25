@@ -336,6 +336,12 @@ function bindEvents() {
 
   document.getElementById("btn-add")?.addEventListener("click", () => openServerModal(null));
 
+  document.getElementById("btn-edit")?.addEventListener("click", () => {
+    if (!selectedId) return;
+    const server = serverList.servers.find((s) => s.id === selectedId);
+    if (server) openServerModal(server);
+  });
+
   document.getElementById("btn-remove")?.addEventListener("click", () => {
     if (selectedId) openRemoveModal();
   });
