@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
@@ -371,6 +372,10 @@ function bindEvents() {
 
   document.getElementById("btn-browse-wow")?.addEventListener("click", () => browseFolder("form-wow-path"));
   document.getElementById("btn-browse-settings")?.addEventListener("click", () => browseFolder("settings-wow-path"));
+
+  const appWindow = getCurrentWindow();
+  document.getElementById("btn-minimize")?.addEventListener("click", () => appWindow.minimize());
+  document.getElementById("btn-close")?.addEventListener("click", () => appWindow.close());
 
   setupModalDismiss("server-modal", closeServerModal);
   setupModalDismiss("remove-modal", closeRemoveModal);

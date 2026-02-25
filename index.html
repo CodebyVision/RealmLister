@@ -9,8 +9,12 @@
   </head>
   <body>
     <div id="app">
-      <header class="app-header">
-        <span class="app-title">RealmLister</span>
+      <header class="app-header" data-tauri-drag-region>
+        <span class="app-title" data-tauri-drag-region>RealmLister</span>
+        <div class="window-controls">
+          <button type="button" id="btn-minimize" class="win-btn" title="Minimize">─</button>
+          <button type="button" id="btn-close" class="win-btn win-btn-close" title="Close">✕</button>
+        </div>
       </header>
 
       <div class="server-list-wrapper">

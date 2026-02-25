@@ -54,22 +54,54 @@ body {
   padding: 0;
 }
 
-/* ── Header ── */
+/* ── Header (custom title bar) ── */
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
+  padding: 0 0 0 12px;
   background: linear-gradient(180deg, #2e2618 0%, #1e1a14 100%);
   border-bottom: 1px solid var(--border-gold);
+  -webkit-app-region: drag;
 }
 
 .app-title {
+  flex: 1;
   font-size: 15px;
   font-weight: 700;
   color: var(--gold);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  padding: 7px 0;
+}
+
+.window-controls {
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  width: 36px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  font-family: inherit;
+}
+
+.win-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-bright);
+}
+
+.win-btn-close:hover {
+  background: #c42b1c;
+  color: #fff;
 }
 
 /* ── Server list ── */
