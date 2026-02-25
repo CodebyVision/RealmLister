@@ -4,89 +4,95 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RealmLister – WoW Realmlist Modifier</title>
+    <title>RealmLister</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
   <body>
     <div id="app">
       <header class="app-header">
-        <div class="app-header-left">
-          <h1>RealmLister</h1>
-          <button type="button" id="btn-add-server" class="btn btn-success">Add server</button>
-        </div>
-        <div class="app-header-right">
-          <nav>
-            <a href="#/" class="nav-link" data-route="main">Servers</a>
-            <button type="button" id="btn-github" class="nav-link nav-link-btn">Github</button>
-            <a href="#/settings" class="nav-link" data-route="settings">Settings</a>
-          </nav>
-        </div>
+        <span class="app-title">RealmLister</span>
       </header>
 
-      <main id="main-view" class="view">
-        <section class="server-list-section">
-          <h2 class="server-list-title">Servers</h2>
-          <div class="server-list-wrapper">
-            <ul id="server-list" class="server-list" role="listbox"></ul>
-          </div>
-        </section>
-        <section class="server-detail-section">
-          <h2 class="server-detail-title">Server Info</h2>
-          <div class="server-detail-container">
-            <div id="server-detail-empty" class="detail-empty">Select a server or add one.</div>
-            <div id="server-detail" class="server-detail" hidden>
-            <h3 id="detail-name" class="detail-name"></h3>
-            <div class="detail-status">
-              <span id="detail-status-label">Status:</span>
-              <span id="detail-status-value"></span>
-              <button type="button" id="btn-refresh-status" class="btn btn-small">Refresh</button>
-            </div>
-            <div class="detail-actions">
-              <button type="button" id="btn-play" class="btn btn-primary btn-play">Play</button>
-              <button type="button" id="btn-remove-server" class="btn btn-danger">Remove</button>
-            </div>
-            <form id="server-form" class="server-form server-form-inline">
-              <label>Name <input type="text" id="form-name" required /></label>
-              <label>Realmlist host <input type="text" id="form-host" placeholder="logon.example.com" required /></label>
-              <label>Port (status check) <input type="number" id="form-port" placeholder="3724" min="1" max="65535" /></label>
-              <label>Start program <input type="text" id="form-wow-exe" placeholder="Wow.exe" title="Executable to launch (e.g. Wow.exe, WowClassic.exe)" /></label>
-              <label>WoW path (optional) <span class="input-with-btn"><input type="text" id="form-wow-path" placeholder="Use default from Settings" /><button type="button" id="btn-browse-wow" class="btn btn-small">Browse</button></span></label>
-              <div class="form-actions">
-                <button type="submit" id="btn-save-server" class="btn btn-primary">Save</button>
-                <button type="button" id="btn-cancel-form" class="btn">Restore</button>
-              </div>
-            </form>
-            </div>
-          </div>
-        </section>
-        <div id="toast" class="toast" role="status" aria-live="polite"></div>
-      </main>
+      <div class="server-list-wrapper">
+        <ul id="server-list" class="server-list" role="listbox"></ul>
+      </div>
 
-      <!-- Remove server confirmation modal -->
-      <div id="remove-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="remove-modal-title" hidden>
-        <div class="modal">
-          <h2 id="remove-modal-title" class="modal-title">Remove server?</h2>
-          <p id="remove-modal-message" class="modal-message"></p>
-          <div class="modal-actions">
-            <button type="button" id="remove-modal-cancel" class="btn">Cancel</button>
-            <button type="button" id="remove-modal-confirm" class="btn btn-danger">Remove</button>
-          </div>
+      <div class="status-bar">
+        <span id="status-text">Status: <span id="status-value">--</span></span>
+        <span id="ping-text">Ping: <span id="ping-value">--</span></span>
+      </div>
+
+      <div class="action-row">
+        <button type="button" id="btn-play" class="btn btn-play" disabled>Play</button>
+        <div class="action-buttons">
+          <button type="button" id="btn-add" class="btn btn-icon" title="Add server">+</button>
+          <button type="button" id="btn-remove" class="btn btn-icon" title="Remove server">−</button>
+          <button type="button" id="btn-settings" class="btn btn-icon" title="Settings">⚙</button>
+          <button type="button" id="btn-github" class="btn btn-icon" title="Github">↗</button>
         </div>
       </div>
 
-      <main id="settings-view" class="view" hidden>
-        <section class="settings-section">
-          <h2>Settings</h2>
-          <form id="settings-form" class="settings-form">
-            <label>Default WoW folder <span class="input-with-btn"><input type="text" id="settings-wow-path" placeholder="C:\Program Files\World of Warcraft" /><button type="button" id="btn-browse-settings" class="btn">Browse</button></span></label>
-            <label>Realmlist locale <select id="settings-locale"><option value="enUS">enUS</option><option value="enGB">enGB</option></select></label>
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Save settings</button>
-            </div>
-          </form>
-        </section>
-        <div id="toast-settings" class="toast" role="status" aria-live="polite"></div>
-      </main>
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    </div>
+
+    <!-- Add / Edit server modal -->
+    <div id="server-modal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="modal">
+        <h2 id="server-modal-title" class="modal-title">Add server</h2>
+        <form id="server-form" class="server-form">
+          <label>Name <input type="text" id="form-name" required /></label>
+          <label>Realmlist host <input type="text" id="form-host" placeholder="logon.example.com" required /></label>
+          <label>Port <input type="number" id="form-port" placeholder="3724" min="1" max="65535" /></label>
+          <label>Start program <input type="text" id="form-wow-exe" placeholder="Wow.exe" /></label>
+          <label>WoW path
+            <span class="input-with-btn">
+              <input type="text" id="form-wow-path" placeholder="Use default from Settings" />
+              <button type="button" id="btn-browse-wow" class="btn btn-small">…</button>
+            </span>
+          </label>
+          <div class="form-actions">
+            <button type="submit" id="btn-save-server" class="btn btn-primary">Save</button>
+            <button type="button" id="btn-cancel-server" class="btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Remove server confirmation modal -->
+    <div id="remove-modal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="modal">
+        <h2 id="remove-modal-title" class="modal-title">Remove server?</h2>
+        <p id="remove-modal-message" class="modal-message"></p>
+        <div class="modal-actions">
+          <button type="button" id="remove-modal-cancel" class="btn">Cancel</button>
+          <button type="button" id="remove-modal-confirm" class="btn btn-danger">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="modal">
+        <h2 class="modal-title">Settings</h2>
+        <form id="settings-form" class="server-form">
+          <label>Default WoW folder
+            <span class="input-with-btn">
+              <input type="text" id="settings-wow-path" placeholder="C:\Program Files\World of Warcraft" />
+              <button type="button" id="btn-browse-settings" class="btn btn-small">…</button>
+            </span>
+          </label>
+          <label>Realmlist locale
+            <select id="settings-locale">
+              <option value="enUS">enUS</option>
+              <option value="enGB">enGB</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" id="btn-cancel-settings" class="btn">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
 </html>
