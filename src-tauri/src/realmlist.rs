@@ -2,7 +2,8 @@ use std::path::Path;
 
 const REALMLIST_LINE_PREFIX: &str = "set realmlist ";
 
-/// Writes realmlist to both locations WoW can read from:
+/// Writes realmlist to all locations WoW clients may read from:
+/// - `wow_path/realmlist.wtf` (root, used by some older clients)
 /// - `wow_path/Data/{locale}/realmlist.wtf`
 /// - `wow_path/WTF/Config.wtf` (adds or updates the realmlist line)
 pub fn write_realmlist(
@@ -12,15 +13,19 @@ pub fn write_realmlist(
 ) -> Result<(), String> {
     let base = Path::new(wow_path);
     let host = host.trim();
+    let content = format!("{}{}", REALMLIST_LINE_PREFIX, host);
 
-    // 1. Data/{locale}/realmlist.wtf (primary)
+    // 1. Root realmlist.wtf (some older/custom clients read from here)
+    let root_realmlist = base.join("realmlist.wtf");
+    std::fs::write(&root_realmlist, &content).map_err(|e| e.to_string())?;
+
+    // 2. Data/{locale}/realmlist.wtf (primary)
     let data_dir = base.join("Data").join(locale);
     std::fs::create_dir_all(&data_dir).map_err(|e| e.to_string())?;
     let realmlist_wtf = data_dir.join("realmlist.wtf");
-    let content = format!("{}{}", REALMLIST_LINE_PREFIX, host);
     std::fs::write(&realmlist_wtf, &content).map_err(|e| e.to_string())?;
 
-    // 2. WTF/Config.wtf (some clients read realmlist from here)
+    // 3. WTF/Config.wtf (some clients read realmlist from here)
     let wtf_dir = base.join("WTF");
     let config_wtf = wtf_dir.join("Config.wtf");
     write_realmlist_into_config(&config_wtf, host)?;
