@@ -10,6 +10,7 @@ interface Server {
   port: number;
   wow_path?: string | null;
   wow_exe?: string;
+  account_name?: string | null;
 }
 
 interface ServerList {
@@ -164,6 +165,7 @@ function openServerModal(server: Server | null) {
   (document.getElementById("form-name") as HTMLInputElement).value = server?.name ?? "";
   (document.getElementById("form-host") as HTMLInputElement).value = server?.realmlist_host ?? "";
   (document.getElementById("form-port") as HTMLInputElement).value = server?.port ? String(server.port) : "3724";
+  (document.getElementById("form-account") as HTMLInputElement).value = server?.account_name ?? "";
   (document.getElementById("form-wow-exe") as HTMLInputElement).value = server?.wow_exe?.trim() || "Wow.exe";
   (document.getElementById("form-wow-path") as HTMLInputElement).value = server?.wow_path ?? "";
   modal.hidden = false;
@@ -180,6 +182,7 @@ async function saveServerFromForm() {
   const host = (document.getElementById("form-host") as HTMLInputElement).value.trim();
   const portVal = (document.getElementById("form-port") as HTMLInputElement).value.trim();
   const port = portVal ? parseInt(portVal, 10) : 3724;
+  const accountName = (document.getElementById("form-account") as HTMLInputElement).value.trim() || null;
   const wowExe = (document.getElementById("form-wow-exe") as HTMLInputElement).value.trim() || "Wow.exe";
   const wowPath = (document.getElementById("form-wow-path") as HTMLInputElement).value.trim() || null;
 
@@ -192,12 +195,12 @@ async function saveServerFromForm() {
     if (editingId) {
       await invoke("update_server", {
         id: editingId,
-        server: { id: editingId, name, realmlist_host: host, port: port || 3724, wow_path: wowPath, wow_exe: wowExe },
+        server: { id: editingId, name, realmlist_host: host, port: port || 3724, wow_path: wowPath, wow_exe: wowExe, account_name: accountName },
       });
       showToast("Server updated.");
     } else {
       await invoke("add_server", {
-        server: { id: "", name, realmlist_host: host, port: port || 3724, wow_path: wowPath, wow_exe: wowExe },
+        server: { id: "", name, realmlist_host: host, port: port || 3724, wow_path: wowPath, wow_exe: wowExe, account_name: accountName },
       });
       showToast("Server added.");
     }

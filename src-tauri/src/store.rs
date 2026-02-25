@@ -13,6 +13,8 @@ pub struct Server {
     /// Executable to launch (e.g. Wow.exe). Default: Wow.exe
     #[serde(default = "default_wow_exe")]
     pub wow_exe: String,
+    #[serde(default)]
+    pub account_name: Option<String>,
 }
 
 fn default_port() -> u16 {

@@ -68,6 +68,7 @@ fn update_server(
         } else {
             server.wow_exe
         };
+        s.account_name = server.account_name;
     }
     save_servers(&dir, &list)?;
     Ok(list)
@@ -99,9 +100,10 @@ fn write_realmlist_cmd(
     wow_path: String,
     host: String,
     locale: Option<String>,
+    account_name: Option<String>,
 ) -> Result<(), String> {
     let locale = locale.unwrap_or_else(|| "enUS".to_string());
-    write_realmlist(&wow_path, &host, &locale)
+    write_realmlist(&wow_path, &host, &locale, account_name.as_deref())
 }
 
 #[derive(serde::Deserialize)]
@@ -145,7 +147,7 @@ fn play_wow(app: tauri::AppHandle, args: PlayWowArgs) -> Result<(), String> {
     } else {
         settings.realmlist_locale.clone()
     };
-    write_realmlist(wow_path, &server.realmlist_host, &locale)?;
+    write_realmlist(wow_path, &server.realmlist_host, &locale, server.account_name.as_deref())?;
     std::process::Command::new(&wow_exe)
         .current_dir(wow_path_buf.parent().unwrap_or(Path::new(".")))
         .spawn()

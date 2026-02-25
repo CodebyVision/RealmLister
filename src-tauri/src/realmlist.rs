@@ -10,6 +10,7 @@ pub fn write_realmlist(
     wow_path: &str,
     host: &str,
     locale: &str,
+    account_name: Option<&str>,
 ) -> Result<(), String> {
     let base = Path::new(wow_path);
     let host = host.trim();
@@ -25,46 +26,59 @@ pub fn write_realmlist(
     let realmlist_wtf = data_dir.join("realmlist.wtf");
     std::fs::write(&realmlist_wtf, &content).map_err(|e| e.to_string())?;
 
-    // 3. WTF/Config.wtf (some clients read realmlist from here)
+    // 3. WTF/Config.wtf (realmlist + accountName)
     let wtf_dir = base.join("WTF");
     let config_wtf = wtf_dir.join("Config.wtf");
-    write_realmlist_into_config(&config_wtf, host)?;
+    write_realmlist_into_config(&config_wtf, host, account_name)?;
 
     Ok(())
 }
 
-/// Updates or adds the realmlist line in WTF/Config.wtf.
-/// Preserves all other lines; replaces any existing "set realmlist" or "SET portal" line.
-fn write_realmlist_into_config(config_path: &std::path::Path, host: &str) -> Result<(), String> {
-    let new_line = format!("{}{}", REALMLIST_LINE_PREFIX, host);
+/// Updates or adds the realmlist and accountName lines in WTF/Config.wtf.
+/// Preserves all other lines.
+fn write_realmlist_into_config(
+    config_path: &std::path::Path,
+    host: &str,
+    account_name: Option<&str>,
+) -> Result<(), String> {
+    let new_realmlist = format!("{}{}", REALMLIST_LINE_PREFIX, host);
+    let new_account = account_name
+        .filter(|n| !n.is_empty())
+        .map(|n| format!("SET accountName \"{}\"", n));
 
-    let (lines, had_realmlist) = if config_path.exists() {
+    let mut had_realmlist = false;
+    let mut had_account = false;
+
+    let mut lines: Vec<String> = if config_path.exists() {
         let s = std::fs::read_to_string(config_path).map_err(|e| e.to_string())?;
-        let lines: Vec<String> = s.lines().map(String::from).collect();
-        let mut had = false;
-        let updated: Vec<String> = lines
-            .into_iter()
+        s.lines()
             .map(|line| {
-                let trimmed = line.trim();
-                if trimmed.to_uppercase().starts_with("SET REALMLIST ")
-                    || trimmed.to_uppercase().starts_with("SET PORTAL ")
-                {
-                    had = true;
-                    new_line.clone()
+                let upper = line.trim().to_uppercase();
+                if upper.starts_with("SET REALMLIST ") || upper.starts_with("SET PORTAL ") {
+                    had_realmlist = true;
+                    new_realmlist.clone()
+                } else if upper.starts_with("SET ACCOUNTNAME ") {
+                    had_account = true;
+                    new_account.clone().unwrap_or_default()
                 } else {
-                    line
+                    line.to_string()
                 }
             })
-            .collect();
-        (updated, had)
+            .collect()
     } else {
-        (Vec::new(), false)
+        Vec::new()
     };
 
-    let mut lines = lines;
     if !had_realmlist {
-        lines.push(new_line);
+        lines.push(new_realmlist);
     }
+    if !had_account {
+        if let Some(acct) = &new_account {
+            lines.push(acct.clone());
+        }
+    }
+
+    lines.retain(|l| !l.is_empty());
 
     std::fs::create_dir_all(config_path.parent().unwrap_or(Path::new(".")))
         .map_err(|e| e.to_string())?;
