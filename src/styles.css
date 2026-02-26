@@ -435,8 +435,26 @@ body {
 .checkbox-label input[type="checkbox"] {
   width: 14px;
   height: 14px;
-  accent-color: var(--gold);
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  background-color: var(--gold-dim);
+  border-color: var(--gold);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23c9a44a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 6l3 3 5-6'/%3E%3C/svg%3E");
+  background-size: 10px 10px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.checkbox-label input[type="checkbox"]:hover {
+  border-color: var(--gold-dim);
 }
 
 .form-actions {
