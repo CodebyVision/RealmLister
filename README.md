@@ -13,6 +13,9 @@ ___
 - **Manage realmlist** – Add, edit, and remove WoW realm entries (realmlist.wtf)
 - **Check realm status** – See if a server is online and view latency (ping)
 - **Quick switch** – Change which server you connect to without editing files by hand
+- **One-click launch** – Start WoW directly from the selected server entry
+- **Optional cache clearing** – Toggle a setting to clear the `Cache` folder in your WoW installation before launch
+- **Auto-minimize on launch** – RealmLister minimizes itself after starting WoW so the game stays in focus
 - **Default WoW path** – Set and use your game installation path for launching
 - **Locale support** – Choose realmlist locale (e.g. enUS) in settings
 - **Cross-platform** – Built with Tauri; runs on Windows, macOS, and Linux
