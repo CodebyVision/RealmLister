@@ -20,6 +20,7 @@ interface ServerList {
 interface AppSettings {
   default_wow_path?: string | null;
   realmlist_locale: string;
+  clear_cache?: boolean;
 }
 
 interface RealmStatus {
@@ -254,6 +255,7 @@ async function confirmRemove() {
 function openSettingsModal() {
   (document.getElementById("settings-wow-path") as HTMLInputElement).value = settings.default_wow_path ?? "";
   (document.getElementById("settings-locale") as HTMLSelectElement).value = settings.realmlist_locale || "enUS";
+  (document.getElementById("settings-clear-cache") as HTMLInputElement).checked = settings.clear_cache ?? false;
   const modal = document.getElementById("settings-modal");
   if (modal) modal.hidden = false;
 }
@@ -266,11 +268,12 @@ function closeSettingsModal() {
 async function saveSettings() {
   const wowPath = (document.getElementById("settings-wow-path") as HTMLInputElement).value.trim() || null;
   const locale = (document.getElementById("settings-locale") as HTMLSelectElement).value || "enUS";
+  const clearCache = (document.getElementById("settings-clear-cache") as HTMLInputElement).checked;
   try {
     await invoke("save_settings_cmd", {
-      settings: { default_wow_path: wowPath, realmlist_locale: locale },
+      settings: { default_wow_path: wowPath, realmlist_locale: locale, clear_cache: clearCache },
     });
-    settings = { default_wow_path: wowPath, realmlist_locale: locale };
+    settings = { default_wow_path: wowPath, realmlist_locale: locale, clear_cache: clearCache };
     showToast("Settings saved.");
     closeSettingsModal();
   } catch (e) {
@@ -285,6 +288,7 @@ async function playWow() {
   try {
     await invoke("play_wow", { args: { serverId: selectedId } });
     showToast("WoW launched.");
+    getCurrentWindow().minimize();
   } catch (e) {
     showToast(String(e), true);
   }

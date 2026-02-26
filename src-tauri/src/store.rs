@@ -31,6 +31,8 @@ pub struct AppSettings {
     pub default_wow_path: Option<String>,
     #[serde(default = "default_locale")]
     pub realmlist_locale: String,
+    #[serde(default)]
+    pub clear_cache: bool,
 }
 
 fn default_locale() -> String {

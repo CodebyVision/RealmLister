@@ -147,6 +147,12 @@ fn play_wow(app: tauri::AppHandle, args: PlayWowArgs) -> Result<(), String> {
     } else {
         settings.realmlist_locale.clone()
     };
+    if settings.clear_cache {
+        let cache_dir = wow_path_buf.join("Cache");
+        if cache_dir.exists() {
+            let _ = std::fs::remove_dir_all(&cache_dir);
+        }
+    }
     write_realmlist(wow_path, &server.realmlist_host, &locale, server.account_name.as_deref())?;
     std::process::Command::new(&wow_exe)
         .current_dir(wow_path_buf.parent().unwrap_or(Path::new(".")))
