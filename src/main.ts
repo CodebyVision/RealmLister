@@ -59,6 +59,7 @@ function showToast(message: string, isError = false) {
   setTimeout(() => { el.hidden = true; }, 3000);
 }
 
+
 // ── Data ──
 
 async function loadServers(): Promise<ServerList> {
