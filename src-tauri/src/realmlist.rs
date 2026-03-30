@@ -34,7 +34,8 @@ pub fn write_realmlist(
     Ok(())
 }
 
-/// Updates or adds the realmlist and accountName lines in WTF/Config.wtf.
+/// Updates or adds the realmlist line in WTF/Config.wtf and only updates
+/// accountName when a non-empty value is provided.
 /// Preserves all other lines.
 fn write_realmlist_into_config(
     config_path: &std::path::Path,
@@ -59,7 +60,13 @@ fn write_realmlist_into_config(
                     new_realmlist.clone()
                 } else if upper.starts_with("SET ACCOUNTNAME ") {
                     had_account = true;
-                    new_account.clone().unwrap_or_default()
+                    // Keep the existing accountName when no value is provided
+                    // by the selected server.
+                    if let Some(acct) = &new_account {
+                        acct.clone()
+                    } else {
+                        line.to_string()
+                    }
                 } else {
                     line.to_string()
                 }
