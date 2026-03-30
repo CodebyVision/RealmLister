@@ -297,21 +297,6 @@ body {
   color: var(--gold);
 }
 
-#btn-github {
-  color: var(--text-bright);
-}
-
-#btn-github:hover {
-  color: var(--gold-light);
-}
-
-#btn-github svg {
-  display: block;
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
 /* ── Generic button ── */
 .btn {
   border-radius: 4px;
