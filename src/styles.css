@@ -133,6 +133,19 @@ body {
   transition: background 0.1s;
 }
 
+.server-list-item.dragging {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.server-list-item.drag-over-top {
+  box-shadow: inset 0 2px 0 var(--gold);
+}
+
+.server-list-item.drag-over-bottom {
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
 .server-list-item:last-child {
   border-bottom: none;
 }

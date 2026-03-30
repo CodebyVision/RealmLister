@@ -32,6 +32,13 @@ let serverList: ServerList = { servers: [] };
 let settings: AppSettings = { realmlist_locale: "enUS" };
 let selectedId: string | null = null;
 let editingId: string | null = null;
+let dragState: {
+  serverId: string;
+  startY: number;
+  sourceEl: HTMLElement;
+  placeholder: HTMLElement | null;
+  active: boolean;
+} | null = null;
 
 const statusMap = new Map<string, { online: boolean; latency_ms: number }>();
 
@@ -147,6 +154,28 @@ function renderServerList() {
     ul.appendChild(li);
   }
   updatePlayButton();
+}
+
+function moveServer(draggedId: string, targetId: string, placeAfter: boolean): boolean {
+  if (draggedId === targetId) return false;
+  const fromIndex = serverList.servers.findIndex((s) => s.id === draggedId);
+  const targetIndex = serverList.servers.findIndex((s) => s.id === targetId);
+  if (fromIndex < 0 || targetIndex < 0) return false;
+
+  const [dragged] = serverList.servers.splice(fromIndex, 1);
+  let insertIndex = targetIndex;
+  if (fromIndex < targetIndex) {
+    insertIndex -= 1;
+  }
+  if (placeAfter) {
+    insertIndex += 1;
+  }
+  serverList.servers.splice(insertIndex, 0, dragged);
+  return true;
+}
+
+async function persistServerOrder() {
+  await invoke("save_servers_cmd", { list: serverList });
 }
 
 function updatePlayButton() {
@@ -339,6 +368,71 @@ function bindEvents() {
     if (id) {
       const server = serverList.servers.find((s) => s.id === id);
       if (server) openServerModal(server);
+    }
+  });
+
+  const DRAG_THRESHOLD = 5;
+
+  listEl?.addEventListener("mousedown", (e) => {
+    const li = (e.target as HTMLElement).closest(".server-list-item") as HTMLElement | null;
+    if (!li || !li.dataset.id) return;
+    dragState = { serverId: li.dataset.id, startY: e.clientY, sourceEl: li, placeholder: null, active: false };
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!dragState) return;
+
+    if (!dragState.active) {
+      if (Math.abs(e.clientY - dragState.startY) < DRAG_THRESHOLD) return;
+      dragState.active = true;
+      dragState.sourceEl.classList.add("dragging");
+    }
+
+    if (!listEl) return;
+    const items = listEl.querySelectorAll<HTMLElement>(".server-list-item:not(.dragging)");
+    items.forEach((el) => el.classList.remove("drag-over-top", "drag-over-bottom"));
+
+    for (const item of items) {
+      const rect = item.getBoundingClientRect();
+      if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        const placeAfter = e.clientY > rect.top + rect.height / 2;
+        item.classList.toggle("drag-over-top", !placeAfter);
+        item.classList.toggle("drag-over-bottom", placeAfter);
+        break;
+      }
+    }
+  });
+
+  document.addEventListener("mouseup", async () => {
+    if (!dragState || !dragState.active) {
+      dragState = null;
+      return;
+    }
+
+    const draggedId = dragState.serverId;
+    dragState.sourceEl.classList.remove("dragging");
+    dragState = null;
+
+    if (!listEl) return;
+    const target = listEl.querySelector<HTMLElement>(".drag-over-top, .drag-over-bottom");
+    if (!target || !target.dataset.id || target.dataset.id === draggedId) {
+      listEl.querySelectorAll(".drag-over-top, .drag-over-bottom")
+        .forEach((el) => el.classList.remove("drag-over-top", "drag-over-bottom"));
+      return;
+    }
+
+    const placeAfter = target.classList.contains("drag-over-bottom");
+    target.classList.remove("drag-over-top", "drag-over-bottom");
+
+    const changed = moveServer(draggedId, target.dataset.id, placeAfter);
+    if (!changed) return;
+
+    try {
+      await persistServerOrder();
+      renderServerList();
+      updateStatusBar();
+    } catch (err) {
+      showToast(String(err), true);
     }
   });
 
