@@ -157,6 +157,17 @@ function renderServerList() {
   updatePlayButton();
 }
 
+function updateSelectionHighlight() {
+  const ul = document.getElementById("server-list");
+  if (!ul) return;
+  ul.querySelectorAll<HTMLElement>(".server-list-item").forEach((li) => {
+    const isSelected = li.dataset.id === selectedId;
+    li.classList.toggle("selected", isSelected);
+    li.setAttribute("aria-selected", isSelected ? "true" : "false");
+  });
+  updatePlayButton();
+}
+
 function moveServer(draggedId: string, targetId: string, placeAfter: boolean): boolean {
   if (draggedId === targetId) return false;
   const fromIndex = serverList.servers.findIndex((s) => s.id === draggedId);
@@ -313,10 +324,11 @@ async function saveSettings() {
 
 // ── Play ──
 
-async function playWow() {
-  if (!selectedId) return;
+async function playWow(serverId?: string) {
+  const id = serverId ?? selectedId;
+  if (!id) return;
   try {
-    await invoke("play_wow", { args: { serverId: selectedId } });
+    await invoke("play_wow", { args: { serverId: id } });
     showToast("WoW launched.");
     getCurrentWindow().minimize();
   } catch (e) {
@@ -355,20 +367,16 @@ function bindEvents() {
     const li = (e.target as HTMLElement).closest(".server-list-item") as HTMLElement | null;
     if (!li) return;
     const id = li.dataset.id;
-    if (id) {
-      selectedId = id;
-      renderServerList();
-      updateStatusBar();
-    }
-  });
+    if (!id) return;
 
-  listEl?.addEventListener("dblclick", (e) => {
-    const li = (e.target as HTMLElement).closest(".server-list-item") as HTMLElement | null;
-    if (!li) return;
-    const id = li.dataset.id;
-    if (id) {
-      const server = serverList.servers.find((s) => s.id === id);
-      if (server) openServerModal(server);
+    selectedId = id;
+    updateSelectionHighlight();
+    updateStatusBar();
+
+    // detail === 2: second click of a double-click (dblclick often never fires
+    // because the first click used to rebuild the list and destroyed the element)
+    if ((e as MouseEvent).detail === 2) {
+      void playWow(id);
     }
   });
 
@@ -431,6 +439,7 @@ function bindEvents() {
     try {
       await persistServerOrder();
       renderServerList();
+      updateSelectionHighlight();
       updateStatusBar();
     } catch (err) {
       showToast(String(err), true);
@@ -455,7 +464,7 @@ function bindEvents() {
     openUrl("https://github.com/CodebyVision/RealmLister");
   });
 
-  document.getElementById("btn-play")?.addEventListener("click", playWow);
+  document.getElementById("btn-play")?.addEventListener("click", () => void playWow());
 
   document.getElementById("server-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
